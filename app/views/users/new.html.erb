@@ -1,13 +1,13 @@
 <h2>Create a New User</h2>
 
-<%= form_with model: @user, local: true do |form| %>
+<%= form_with model: @user, local: true, data: {turbo: false} do |form| %>
   <%= form.label :name %>
   <%= form.text_field :name, required: true %><br>
   <%= form.label :email %>
-  <%= form.text_field :email, required: true %><br>
-  <%= form.label :password %>
-  <%= form.text_field :password, required: true%><br>
-  <%= form.label :confirm_password %>
-  <%= form.text_field :confirm_password, required: true%><br>
+  <%= form.text_field :email, required: true, uniqueness: true %><br>
+  <%= form.label :password, "Password:" %>
+  <%= form.text_field :password, required: true %><br>
+  <%= form.label :password_confirmation, "Confirm Password:" %>
+  <%= form.text_field :password_confirmation, required: true %><br>
   <%= form.submit "Create New User" %>
 <% end %>
