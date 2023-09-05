@@ -24,4 +24,12 @@ RSpec.describe "User Registration" do
     expect(current_path).to eq(register_path)
     expect(page).to have_content("Email has already been taken")
   end
+  # As a visitor 
+  # When I visit `/register`
+  # I see a form to fill in my name, email, password, and password confirmation.
+  # When I fill in that form with my name, email, and matching passwords,
+  # I'm taken to my dashboard page `/users/:id`
+  it "can fill in name, email, password, and password confirmation on the form" do
+    User.create(name: "Lulu11", email: "lulu11@test.com")
+  end
 end
