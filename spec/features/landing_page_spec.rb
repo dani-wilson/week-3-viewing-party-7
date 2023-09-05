@@ -36,4 +36,55 @@ RSpec.describe 'Landing Page' do
       expect(page).to have_content(user2.email)
     end     
   end 
+
+  it "can login as a registered user" do
+    user = User.create!(name: 'dani', email: 'dani@test.com', password: 'password', password_confirmation: 'password')
+
+    visit '/'
+
+    expect(page).to have_link("Log In")
+    click_link "Log In"
+    expect(current_path).to eq(login_path)
+
+    fill_in :name, with: "dani"
+    fill_in :email, with: "dani@test.com"
+    fill_in :password, with: "password"
+    fill_in :password_confirmation, with: "password"
+    click_on "Log In"
+
+    expect(current_path).to eq(user_path(user.id))
+    expect(page).to have_content("Welcome, dani")
+  end
+  
+  it "will not allow incorrect or partial credentials" do
+    user = User.create!(name: 'dani', email: 'dani@test.com', password: 'password', password_confirmation: 'password')
+
+    visit login_path
+
+    fill_in :name, with: "dani"
+    fill_in :email, with: "dani1@test.com"
+    fill_in :password, with: "password"
+    fill_in :password_confirmation, with: "password"
+    click_on "Log In"
+
+    expect(current_path).to eq(login_path)
+    expect(page).to have_content("Invalid credentials")
+
+    fill_in :name, with: "dani"
+    fill_in :email, with: "dani@test.com"
+    fill_in :password, with: "password"
+    fill_in :password_confirmation, with: "passwords"
+    click_on "Log In"
+
+    expect(current_path).to eq(login_path)
+    expect(page).to have_content("Invalid credentials")
+
+    fill_in :email, with: "dani@test.com"
+    fill_in :password, with: "password"
+    fill_in :password_confirmation, with: "passwords"
+    click_on "Log In"
+
+    expect(current_path).to eq(login_path)
+    expect(page).to have_content("Invalid credentials")
+  end
 end
