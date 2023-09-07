@@ -3,6 +3,15 @@ require 'rails_helper'
 RSpec.describe 'Movies Index Page' do
   before do 
     @user1 = User.create(name: "User One", email: "user1@test.com", password: 'password', password_confirmation: 'password')
+
+    visit login_path
+
+    fill_in :name, with: "User One"
+    fill_in :email, with: "user1@test.com"
+    fill_in :password, with: "password"
+    fill_in :password_confirmation, with: "password"
+    click_on "Log In"
+
     i = 1
     20.times do 
       Movie.create(title: "Movie #{i} Title", rating: rand(1..10), description: "This is a description about Movie #{i}")
@@ -12,7 +21,7 @@ RSpec.describe 'Movies Index Page' do
 
   it 'shows all movies' do 
     visit "users/#{@user1.id}"
-
+    
     click_button "Find Top Rated Movies"
 
     expect(current_path).to eq("/users/#{@user1.id}/movies")
