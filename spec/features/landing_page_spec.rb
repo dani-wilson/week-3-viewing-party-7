@@ -22,20 +22,20 @@ RSpec.describe 'Landing Page' do
     expect(current_path).to eq(root_path)
   end 
 
-  it 'lists out existing users' do 
+  # it 'lists out existing users' do 
     
-    user1 = User.create(name: "User One", email: "user1@test.com", password: 'rats', password_confirmation: 'rats')
-    user2 = User.create(name: "User Two", email: "user2@test.com", password: 'socks', password_confirmation: 'socks')
+  #   user1 = User.create(name: "User One", email: "user1@test.com", password: 'rats', password_confirmation: 'rats')
+  #   user2 = User.create(name: "User Two", email: "user2@test.com", password: 'socks', password_confirmation: 'socks')
     
-    visit '/'
+  #   visit '/'
     
-    expect(page).to have_content('Existing Users:')
+  #   expect(page).to have_content('Existing Users:')
 
-    within('.existing-users') do 
-      expect(page).to have_content(user1.email)
-      expect(page).to have_content(user2.email)
-    end     
-  end 
+  #   within('.existing-users') do 
+  #     expect(page).to have_content(user1.email)
+  #     expect(page).to have_content(user2.email)
+  #   end     
+  # end 
 
   it "can login as a registered user" do
     user = User.create!(name: 'dani', email: 'dani@test.com', password: 'password', password_confirmation: 'password')
@@ -86,5 +86,86 @@ RSpec.describe 'Landing Page' do
 
     expect(current_path).to eq(login_path)
     expect(page).to have_content("Invalid credentials")
+  end
+
+  it "does not display a link to log in or create account as a logged in user" do
+    user = User.create!(name: 'dani', email: 'dani@test.com', password: 'password', password_confirmation: 'password')
+
+    visit login_path
+    fill_in :name, with: "dani"
+    fill_in :email, with: "dani@test.com"
+    fill_in :password, with: "password"
+    fill_in :password_confirmation, with: "password"
+    click_on "Log In"
+    
+    click_on "Home"
+    expect(current_path).to eq(root_path)
+    expect(page).to have_link("Log Out")
+    expect(page).to_not have_link("Log In")
+    expect(page).to_not have_link("Create New User")
+  end
+
+  it "when I click the Log Out link, I am redirected to the landing page where I see the option to Log In" do
+    user = User.create!(name: 'dani', email: 'dani@test.com', password: 'password', password_confirmation: 'password')
+
+    visit login_path
+
+    fill_in :name, with: "dani"
+    fill_in :email, with: "dani@test.com"
+    fill_in :password, with: "password"
+    fill_in :password_confirmation, with: "password"
+    click_on "Log In"
+
+    visit root_path
+
+    expect(page).to have_link("Log Out")
+    expect(page).to_not have_link("Log In")
+    expect(page).to_not have_link("Create New User")
+
+    click_link "Log Out"
+
+    expect(current_path).to eq(root_path)
+    expect(page).to_not have_link("Log Out")
+    expect(page).to have_link("Log In")
+    expect(page).to have_button("Create New User")
+  end
+  
+  it "does not display existing users as a visitor" do
+    user = User.create!(name: 'dani', email: 'dani@test.com', password: 'password', password_confirmation: 'password')
+
+    visit root_path
+
+    expect(page).to_not have_content('dani@test.com')
+  end
+  
+  it "does not contain a link to existing users' show pages" do
+    user = User.create!(name: 'dani', email: 'dani@test.com', password: 'password', password_confirmation: 'password')
+    user2 = User.create!(name: 'meg', email: 'meg@test.com', password: 'password1', password_confirmation: 'password1')
+
+    visit login_path
+
+    fill_in :name, with: "dani"
+    fill_in :email, with: "dani@test.com"
+    fill_in :password, with: "password"
+    fill_in :password_confirmation, with: "password"
+    click_on "Log In"
+
+    visit root_path
+
+    expect(page).to have_content("Existing Users")
+    expect(page).to_not have_link("meg@test.com")
+    expect(page).to have_content("meg@test.com")
+    expect(page).to have_content("dani@test.com")
+  end
+
+  it "cannot access the dashboard as a visitor" do
+    user = User.create!(name: 'dani', email: 'dani@test.com', password: 'password', password_confirmation: 'password')
+
+    visit root_path
+
+    expect(page).to have_link("View My Dashboard")
+    click_link("View My Dashboard")
+    expect(current_path).to eq(root_path)
+    expect(page).to have_content("Please login or register to view your dashboard.")
   end
 end
