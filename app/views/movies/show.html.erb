@@ -3,3 +3,5 @@
 <p>Description: <%= @movie.description %></p>
 
 <p>Rating: <%= @movie.rating %>/10</p>
+
+<%= button_to "Create a Viewing Party", movie_path(current_user, @movie.id) %>
