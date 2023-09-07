@@ -1,0 +1,11 @@
+<%= form_with url: login_path, method: :post, data: {turbo: false} do |form| %>
+  <%= form.label :name, "Name:" %>
+  <%= form.text_field :name, required: true %><br>
+  <%= form.label :email, "Email:" %>
+  <%= form.text_field :email, required: true %><br>
+  <%= form.label :password, "Password:" %>
+  <%= form.text_field :password, required: true %><br>
+  <%= form.label :password_confirmation, "Confirm Password:" %>
+  <%= form.text_field :password_confirmation, required: true %>
+  <%= form.submit "Log In" %>
+<% end %>
